@@ -1,8 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
+
 package supermarketmanagementsystem;
+
+import java.util.Scanner;
 
 /**
  *
@@ -14,7 +13,24 @@ public class SupermarketManagementSystem {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        // TODO code application logic here
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Please enter the filename to read: ");
+        String filename = sc.nextLine();
+
+        EmployeeDatabase database = new EmployeeDatabase();
+
+        if (database.loadFromFile(filename)) {
+            System.out.println("File read successfully");
+            System.out.println("Total employees loaded: " + database.getCount());
+
+            // Temporary check - will be removed once the menu is built
+            for (Employee employee : database.getEmployees()) {
+                System.out.println(employee);
+            }
+        } else {
+            System.out.println("File not found: " + filename);
+        }
     }
-    
+
 }
