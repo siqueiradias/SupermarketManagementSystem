@@ -1,6 +1,6 @@
-
 package supermarketmanagementsystem;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
@@ -8,6 +8,8 @@ import java.util.Scanner;
  * @author diogodias
  */
 public class SupermarketManagementSystem {
+
+    private static final int DISPLAY_LIMIT = 20;
 
     /**
      * @param args the command line arguments
@@ -27,7 +29,8 @@ public class SupermarketManagementSystem {
             switch (choice) {
                 case SORT:
                     System.out.println("SORT selected");
-                    // Merge Sort will be implemented in the next commit
+                    database.sortByName();
+                    displayFirstEmployees(database, DISPLAY_LIMIT);
                     break;
 
                 case SEARCH:
@@ -104,6 +107,23 @@ public class SupermarketManagementSystem {
 
             System.out.println("Invalid option. Please enter a number between 1 and "
                     + totalOptions + ":");
+        }
+    }
+    
+    // Displays the first employees of the list (up to the given limit).
+    private static void displayFirstEmployees(EmployeeDatabase database, int limit) {
+        ArrayList<Employee> employees = database.getEmployees();
+        int total = Math.min(limit, employees.size());
+
+        System.out.println("First " + total + " employees in alphabetical order:");
+
+        for (int i = 0; i < total; i++) {
+            Employee employee = employees.get(i);
+            System.out.printf("%2d. %-22s %-30s %s%n",
+                    i + 1,
+                    employee.getFullName(),
+                    employee.getJobTitle(),
+                    employee.getDepartment().getDepartmentName());
         }
     }
 }

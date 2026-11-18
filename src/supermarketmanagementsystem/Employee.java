@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 /**
@@ -38,6 +37,12 @@ public abstract class Employee {
 
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    // Compares this employee's full name with another name, ignoring case.
+    // Used by both Merge Sort and Binary Search so they share the same ordering rule.
+    public int compareNameTo(String otherName) {
+        return getFullName().compareToIgnoreCase(otherName.trim());
     }
 
     public Department getDepartment() {

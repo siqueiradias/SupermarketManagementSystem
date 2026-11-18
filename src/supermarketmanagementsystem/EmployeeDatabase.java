@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 import java.io.File;
@@ -89,5 +88,10 @@ public class EmployeeDatabase {
 
     public int getCount() {
         return employees.size();
+    }
+
+    // Sorts the employee list alphabetically by full name using recursive Merge Sort.
+    public void sortByName() {
+        EmployeeSorter.mergeSort(employees, 0, employees.size() - 1);
     }
 }
