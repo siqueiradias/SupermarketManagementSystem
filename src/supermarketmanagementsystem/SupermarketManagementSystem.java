@@ -35,7 +35,7 @@ public class SupermarketManagementSystem {
 
                 case SEARCH:
                     System.out.println("SEARCH selected");
-                    // Recursive Binary Search will be implemented later
+                    searchEmployee(sc, database);
                     break;
 
                 case ADD_RECORDS:
@@ -109,7 +109,7 @@ public class SupermarketManagementSystem {
                     + totalOptions + ":");
         }
     }
-    
+
     // Displays the first employees of the list (up to the given limit).
     private static void displayFirstEmployees(EmployeeDatabase database, int limit) {
         ArrayList<Employee> employees = database.getEmployees();
@@ -125,5 +125,42 @@ public class SupermarketManagementSystem {
                     employee.getJobTitle(),
                     employee.getDepartment().getDepartmentName());
         }
+    }
+
+    // Asks for a name, searches for it and shows the employee's details.
+    private static void searchEmployee(Scanner sc, EmployeeDatabase database) {
+        String name = "";
+
+        while (name.isEmpty()) {
+            System.out.println("Please enter the full name to search (e.g. John Smith):");
+            // trim() removes outer spaces; replaceAll joins repeated inner spaces into one
+            name = sc.nextLine().trim().replaceAll("\\s+", " ");
+
+            if (name.isEmpty()) {
+                System.out.println("Name cannot be empty.");
+            }
+        }
+
+        Employee found = database.findByName(name);
+
+        if (found == null) {
+            System.out.println("No employee found with the name \"" + name + "\".");
+            return;
+        }
+
+        System.out.println("Employee found:");
+        System.out.println("  Name:         " + found.getFullName());
+        System.out.println("  Job Title:    " + found.getJobTitle());
+        System.out.println("  Manager Type: " + getManagerType(found));
+        System.out.println("  Department:   " + found.getDepartment());
+        System.out.println("  Company:      " + found.getCompany());
+    }
+
+    // Returns the management level for managers, or the employment type otherwise.
+    private static String getManagerType(Employee employee) {
+        if (employee instanceof Manager) {
+            return ((Manager) employee).getManagementLevel();
+        }
+        return "Not a manager (" + employee.getEmploymentType() + ")";
     }
 }

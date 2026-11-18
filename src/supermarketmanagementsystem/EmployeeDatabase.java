@@ -12,9 +12,11 @@ import java.util.Scanner;
 public class EmployeeDatabase {
 
     private ArrayList<Employee> employees;
+    private boolean sorted; // true only while the list is in alphabetical order
 
     public EmployeeDatabase() {
         employees = new ArrayList<>();
+        sorted = false;
     }
 
     // Reads the CSV-style data file and populates the employees list.
@@ -36,7 +38,7 @@ public class EmployeeDatabase {
                 Employee employee = parseEmployeeLine(line);
 
                 if (employee != null) {
-                    employees.add(employee);
+                    addEmployee(employee);
                 }
             }
 
@@ -78,8 +80,32 @@ public class EmployeeDatabase {
                 department, position, jobTitle, company);
     }
 
+    // Adds an employee. The list may no longer be in order, so it is marked unsorted.
     public void addEmployee(Employee employee) {
         employees.add(employee);
+        sorted = false;
+    }
+
+    // Sorts the employee list alphabetically by full name using recursive Merge Sort.
+    public void sortByName() {
+        EmployeeSorter.mergeSort(employees, 0, employees.size() - 1);
+        sorted = true;
+    }
+
+    // Finds an employee by full name using recursive Binary Search.
+    // Sorts the list first if needed, because Binary Search requires sorted data.
+    // Returns the employee, or null if not found.
+    public Employee findByName(String name) {
+        if (!sorted) {
+            sortByName();
+        }
+
+        int index = EmployeeSearcher.binarySearch(employees, 0, employees.size() - 1, name);
+
+        if (index == -1) {
+            return null;
+        }
+        return employees.get(index);
     }
 
     public ArrayList<Employee> getEmployees() {
@@ -88,10 +114,5 @@ public class EmployeeDatabase {
 
     public int getCount() {
         return employees.size();
-    }
-
-    // Sorts the employee list alphabetically by full name using recursive Merge Sort.
-    public void sortByName() {
-        EmployeeSorter.mergeSort(employees, 0, employees.size() - 1);
     }
 }
