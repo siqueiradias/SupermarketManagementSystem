@@ -16,4 +16,9 @@ public class Intern extends Employee {
     public String getEmploymentType() {
         return "Intern";
     }
+
+    @Override
+    public int getHierarchyRank() {
+        return 9;
+    }
 }

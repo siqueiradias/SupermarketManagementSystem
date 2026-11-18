@@ -15,4 +15,9 @@ public class AssistantManager extends Manager {
     public String getManagementLevel() {
         return "Assistant Manager";
     }
+
+    @Override
+    public int getHierarchyRank() {
+        return 3;
+    }
 }

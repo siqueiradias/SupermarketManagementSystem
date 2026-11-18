@@ -16,4 +16,9 @@ public class HeadManager extends Manager {
     public String getManagementLevel() {
         return "Head Manager";
     }
+
+    @Override
+    public int getHierarchyRank() {
+        return 1;
+    }
 }

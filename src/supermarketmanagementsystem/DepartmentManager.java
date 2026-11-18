@@ -16,4 +16,9 @@ public class DepartmentManager extends Manager {
     public String getManagementLevel() {
         return "Department Manager";
     }
+
+    @Override
+    public int getHierarchyRank() {
+        return 2;
+    }
 }

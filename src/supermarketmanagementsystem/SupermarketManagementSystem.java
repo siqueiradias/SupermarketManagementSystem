@@ -11,6 +11,7 @@ public class SupermarketManagementSystem {
 
     private static final int DISPLAY_LIMIT = 20;
     private static final String NOT_SPECIFIED = "N/A";
+    private static final int MIN_TREE_RECORDS = 20;
 
     /**
      * @param args the command line arguments
@@ -46,7 +47,7 @@ public class SupermarketManagementSystem {
 
                 case CREATE_BINARY_TREE:
                     System.out.println("Create Binary Tree selected");
-                    // Binary tree hierarchy will be implemented later
+                    buildEmployeeTree(database);
                     break;
 
                 case EXIT:
@@ -301,5 +302,25 @@ public class SupermarketManagementSystem {
         for (Employee employee : newEmployees) {
             System.out.println("  " + employee);
         }
+    }
+
+    // Builds the employee hierarchy as a binary tree using level-order insertion.
+    private static void buildEmployeeTree(EmployeeDatabase database) {
+        if (database.getCount() < MIN_TREE_RECORDS) {
+            System.out.println("At least " + MIN_TREE_RECORDS
+                    + " employee records are needed to build the tree. Currently: "
+                    + database.getCount() + ". Please add more records.");
+            return;
+        }
+
+        // Sorting first keeps employees of the same rank in alphabetical order
+        database.sortByName();
+
+        EmployeeTree tree = new EmployeeTree();
+        tree.buildFromEmployees(database.getEmployees());
+
+        System.out.println("Binary tree created successfully.");
+        System.out.println("Root: " + tree.getRoot());
+        System.out.println("Total nodes: " + tree.countNodes());
     }
 }

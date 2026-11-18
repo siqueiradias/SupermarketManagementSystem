@@ -60,6 +60,10 @@ public abstract class Employee {
     // Each subclass must describe its own employment category
     public abstract String getEmploymentType();
 
+    // Position in the organisational hierarchy: 1 is the highest level.
+    // Used to decide where each employee goes in the binary tree.
+    public abstract int getHierarchyRank();
+
     @Override
     public String toString() {
         return getFullName() + " - " + jobTitle + " (" + getEmploymentType()

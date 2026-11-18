@@ -15,4 +15,9 @@ public class TeamLead extends Manager {
     public String getManagementLevel() {
         return "Team Lead";
     }
+
+    @Override
+    public int getHierarchyRank() {
+        return 4;
+    }
 }

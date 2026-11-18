@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 /**
@@ -23,5 +22,17 @@ public class StaffEmployee extends Employee {
     @Override
     public String getEmploymentType() {
         return "Staff - " + seniorityLevel;
+    }
+
+    @Override
+    public int getHierarchyRank() {
+        switch (seniorityLevel) {
+            case "senior":
+                return 5;
+            case "middle":
+                return 6;
+            default: // junior
+                return 7;
+        }
     }
 }

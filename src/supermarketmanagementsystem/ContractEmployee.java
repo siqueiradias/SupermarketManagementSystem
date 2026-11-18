@@ -16,4 +16,9 @@ public class ContractEmployee extends Employee {
     public String getEmploymentType() {
         return "Contract";
     }
+
+    @Override
+    public int getHierarchyRank() {
+        return 8;
+    }
 }
