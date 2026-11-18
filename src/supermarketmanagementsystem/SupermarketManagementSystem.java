@@ -10,6 +10,7 @@ import java.util.Scanner;
 public class SupermarketManagementSystem {
 
     private static final int DISPLAY_LIMIT = 20;
+    private static final String NOT_SPECIFIED = "N/A";
 
     /**
      * @param args the command line arguments
@@ -40,7 +41,7 @@ public class SupermarketManagementSystem {
 
                 case ADD_RECORDS:
                     System.out.println("ADD RECORDS selected");
-                    // New employee input will be implemented later
+                    addEmployees(sc, database);
                     break;
 
                 case CREATE_BINARY_TREE:
@@ -162,5 +163,143 @@ public class SupermarketManagementSystem {
             return ((Manager) employee).getManagementLevel();
         }
         return "Not a manager (" + employee.getEmploymentType() + ")";
+    }
+
+    // Lets the user add one or more new managers, then shows all newly added records.
+    private static void addEmployees(Scanner sc, EmployeeDatabase database) {
+        ArrayList<String> departmentNames = database.getDepartmentNames();
+
+        if (departmentNames.isEmpty()) {
+            System.out.println("No departments available. Please load a data file first.");
+            return;
+        }
+
+        do {
+            String name = readNewEmployeeName(sc, database);
+            int spaceIndex = name.indexOf(' ');
+            String firstName = name.substring(0, spaceIndex);
+            String lastName = name.substring(spaceIndex + 1);
+
+            // Manager type choice, listed from the ManagerType enum
+            System.out.println("Please select from the following Management Staff:");
+            for (ManagerType type : ManagerType.values()) {
+                System.out.println(type.getOptionNumber() + ". " + type.getJobTitle());
+            }
+            int typeNumber = readNumberInRange(sc, 1, ManagerType.values().length);
+            ManagerType managerType = ManagerType.fromNumber(typeNumber);
+
+            // Department choice, listed from the departments that already exist
+            System.out.println("Please select the Department:");
+            for (int i = 0; i < departmentNames.size(); i++) {
+                System.out.println((i + 1) + ". " + departmentNames.get(i));
+            }
+            int departmentNumber = readNumberInRange(sc, 1, departmentNames.size());
+            String departmentName = departmentNames.get(departmentNumber - 1);
+
+            Department department = Department.createDepartment(departmentName);
+
+            Employee newEmployee = Manager.createManager(firstName, lastName,
+                    NOT_SPECIFIED, NOT_SPECIFIED, 0.0, department,
+                    managerType.getJobTitle(), NOT_SPECIFIED);
+
+            database.addNewEmployee(newEmployee);
+
+            System.out.println("\"" + name + "\" has been added as \""
+                    + managerType.getJobTitle() + "\" to \"" + departmentName
+                    + "\" successfully!");
+
+        } while (askYesNo(sc, "Would you like to add another employee?"));
+
+        displayNewEmployees(database);
+    }
+
+    // Reads and validates the new employee's full name.
+    private static String readNewEmployeeName(Scanner sc, EmployeeDatabase database) {
+        while (true) {
+            System.out.println("Please input the Employee Name (first and last name):");
+            String name = sc.nextLine().trim().replaceAll("\\s+", " ");
+
+            if (name.isEmpty()) {
+                System.out.println("Name cannot be empty.");
+                continue;
+            }
+
+            // Letters only (plus ' and -), with at least two words: first and last name
+            if (!name.matches("[A-Za-z'-]+( [A-Za-z'-]+)+")) {
+                System.out.println("Please enter a first and last name using letters only.");
+                continue;
+            }
+
+            name = capitaliseWords(name);
+
+            // Names must be unique, because the Binary Search relies on them
+            if (database.findByName(name) != null) {
+                System.out.println("An employee named \"" + name + "\" already exists.");
+                continue;
+            }
+
+            return name;
+        }
+    }
+
+    // Makes the first letter of each word upper case, e.g. "john joe" -> "John Joe".
+    private static String capitaliseWords(String text) {
+        String[] words = text.split(" ");
+        String result = "";
+
+        for (int i = 0; i < words.length; i++) {
+            String word = words[i];
+            result += Character.toUpperCase(word.charAt(0)) + word.substring(1);
+
+            if (i < words.length - 1) {
+                result += " ";
+            }
+        }
+        return result;
+    }
+
+    // Reads a whole number and keeps asking until it is between min and max.
+    private static int readNumberInRange(Scanner sc, int min, int max) {
+        while (true) {
+            String input = sc.nextLine().trim();
+
+            try {
+                int number = Integer.parseInt(input);
+                if (number >= min && number <= max) {
+                    return number;
+                }
+            } catch (NumberFormatException e) {
+                // Not a number - handled by the message below
+            }
+
+            System.out.println("Invalid choice. Please enter a number between "
+                    + min + " and " + max + ":");
+        }
+    }
+
+    // Asks a yes/no question and keeps asking until the answer is Y or N.
+    private static boolean askYesNo(Scanner sc, String question) {
+        while (true) {
+            System.out.println(question + " (Y/N):");
+            String answer = sc.nextLine().trim().toUpperCase();
+
+            if (answer.equals("Y")) {
+                return true;
+            }
+            if (answer.equals("N")) {
+                return false;
+            }
+            System.out.println("Please answer Y or N.");
+        }
+    }
+
+    // Shows every record the user has added during this run.
+    private static void displayNewEmployees(EmployeeDatabase database) {
+        ArrayList<Employee> newEmployees = database.getNewEmployees();
+
+        System.out.println("Newly added records (" + newEmployees.size() + "):");
+        for (Employee employee : newEmployees) {
+            System.out.println("  " + employee);
+        }
     }
 }

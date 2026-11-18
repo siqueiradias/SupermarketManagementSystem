@@ -13,9 +13,11 @@ public class EmployeeDatabase {
 
     private ArrayList<Employee> employees;
     private boolean sorted; // true only while the list is in alphabetical order
+    private ArrayList<Employee> newEmployees; // records added by the user during this run
 
     public EmployeeDatabase() {
         employees = new ArrayList<>();
+        newEmployees = new ArrayList<>();
         sorted = false;
     }
 
@@ -106,6 +108,36 @@ public class EmployeeDatabase {
             return null;
         }
         return employees.get(index);
+    }
+
+    // Adds a record typed by the user and remembers it as a new record.
+    public void addNewEmployee(Employee employee) {
+        addEmployee(employee);
+        newEmployees.add(employee);
+    }
+
+    public ArrayList<Employee> getNewEmployees() {
+        return newEmployees;
+    }
+
+    // Returns the names of all departments that currently exist, without duplicates.
+    // Each new name is inserted in its alphabetical position (the insertion idea from class),
+    // so the list is always shown to the user in the same order.
+    public ArrayList<String> getDepartmentNames() {
+        ArrayList<String> names = new ArrayList<>();
+
+        for (Employee employee : employees) {
+            String name = employee.getDepartment().getDepartmentName();
+
+            if (!names.contains(name)) {
+                int position = 0;
+                while (position < names.size() && names.get(position).compareTo(name) < 0) {
+                    position++;
+                }
+                names.add(position, name);
+            }
+        }
+        return names;
     }
 
     public ArrayList<Employee> getEmployees() {
