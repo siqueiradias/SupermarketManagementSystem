@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Department that deals directly with customers (Sales, Customer Service, Marketing).
  *
  * @author diogodias
  */

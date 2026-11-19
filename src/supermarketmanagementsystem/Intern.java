@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Employee on an internship.
  *
  * @author diogodias
  */

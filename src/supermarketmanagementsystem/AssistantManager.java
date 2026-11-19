@@ -1,6 +1,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Manager who supports a higher-level manager.
  *
  * @author diogodias
  */

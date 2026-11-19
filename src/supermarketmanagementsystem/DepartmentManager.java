@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Manager responsible for a department (Manager and Senior Manager titles).
  *
  * @author diogodias
  */

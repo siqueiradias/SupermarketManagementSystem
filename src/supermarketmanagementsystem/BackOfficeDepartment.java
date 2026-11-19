@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Administrative department (HR, Finance, Accounting).
  *
  * @author diogodias
  */

@@ -1,6 +1,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Manager who leads a small team.
  *
  * @author diogodias
  */

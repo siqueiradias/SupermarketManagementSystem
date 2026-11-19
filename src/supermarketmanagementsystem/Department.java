@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Parent class for all departments. Creates the correct department type from a department name.
  *
  * @author diogodias
  */

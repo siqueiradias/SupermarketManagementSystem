@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- *
+ * Entry point of the program. Loads the data file and runs the console menu (sort, search, add records, binary tree).
+ * 
  * @author diogodias
  */
 public class SupermarketManagementSystem {

@@ -1,6 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
+ * Parent class for everyone in the organisation. 
+ * Holds the data read from the file and creates the correct employee type.
  *
  * @author diogodias
  */
@@ -8,9 +10,9 @@ public abstract class Employee {
 
     protected String firstName;
     protected String lastName;
-    protected String gender;
-    protected String email;
-    protected double salary;
+    private String gender;
+    private String email;
+    private double salary;
     protected Department department;
     protected String jobTitle;
     protected String company;
@@ -98,5 +100,26 @@ public abstract class Employee {
                 return Manager.createManager(firstName, lastName, gender, email, salary,
                         department, jobTitle, company);
         }
+    }
+
+    /**
+     * @return the gender
+     */
+    public String getGender() {
+        return gender;
+    }
+
+    /**
+     * @return the email
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * @return the salary
+     */
+    public double getSalary() {
+        return salary;
     }
 }

@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Highest management level in the store.
  *
  * @author diogodias
  */

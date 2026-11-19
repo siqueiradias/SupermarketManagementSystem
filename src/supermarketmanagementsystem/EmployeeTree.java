@@ -4,6 +4,8 @@ package supermarketmanagementsystem;
 import java.util.ArrayList;
 
 /**
+ * Binary tree that represents the employee hierarchy, 
+ * with level-order insertion and traversal, height and node count.
  *
  * @author diogodias
  */

@@ -2,7 +2,8 @@
 package supermarketmanagementsystem;
 
 /**
- *
+ * Enum with the options of the main menu. The menu is printed by iterating through its values.
+ * 
  * @author diogodias
  */
 public enum MenuOption {

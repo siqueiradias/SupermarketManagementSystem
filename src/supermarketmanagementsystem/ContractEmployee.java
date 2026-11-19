@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Employee hired on a fixed-term contract.
  *
  * @author diogodias
  */

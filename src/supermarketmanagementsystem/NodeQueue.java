@@ -2,6 +2,8 @@
 package supermarketmanagementsystem;
 
 /**
+ * Circular array-based FIFO queue of tree nodes, used for level-order insertion
+ * and traversal.
  *
  * @author diogodias
  */

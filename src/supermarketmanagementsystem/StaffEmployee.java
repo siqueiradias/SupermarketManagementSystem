@@ -1,6 +1,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Permanent employee with a seniority level (junior, middle or senior).
  *
  * @author diogodias
  */

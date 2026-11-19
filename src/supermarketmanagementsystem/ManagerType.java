@@ -2,7 +2,8 @@
 package supermarketmanagementsystem;
 
 /**
- *
+ * Enum with the valid manager types a user can choose when adding a new record.
+ * 
  * @author diogodias
  */
 public enum ManagerType {

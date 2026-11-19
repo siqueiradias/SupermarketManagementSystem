@@ -4,6 +4,7 @@ package supermarketmanagementsystem;
 import java.util.ArrayList;
 
 /**
+ * Recursive Merge Sort that orders employees alphabetically by full name.
  *
  * @author diogodias
  */

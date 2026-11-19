@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Parent class for all managers. A manager is also an employee.
  *
  * @author diogodias
  */

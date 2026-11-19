@@ -2,6 +2,7 @@
 package supermarketmanagementsystem;
 
 /**
+ * Node of the binary tree. Stores an employee's name, designation and department.
  *
  * @author diogodias
  */

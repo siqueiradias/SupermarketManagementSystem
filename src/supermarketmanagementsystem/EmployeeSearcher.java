@@ -4,6 +4,7 @@ package supermarketmanagementsystem;
 import java.util.ArrayList;
 
 /**
+ * Recursive Binary Search that finds an employee by full name in a sorted list.
  *
  * @author diogodias
  */

@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- *
+ * Reads the data file and stores all employees in memory. 
+ * Tracks whether the list is sorted and which records were added by the user.
+ * 
  * @author diogodias
  */
 public class EmployeeDatabase {
