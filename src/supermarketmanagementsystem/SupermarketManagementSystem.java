@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Entry point of the program. Loads the data file and runs the console menu (sort, search, add records, binary tree).
- * 
+ * Entry point of the program. Loads the data file and runs the console menu
+ * (sort, search, add records, binary tree).
+ *
  * @author diogodias
  */
 public class SupermarketManagementSystem {
@@ -226,8 +227,9 @@ public class SupermarketManagementSystem {
                 continue;
             }
 
-            // Letters only (plus ' and -), with at least two words: first and last name
-            if (!name.matches("[A-Za-z'-]+( [A-Za-z'-]+)+")) {
+            // At least two words (first and last name). Each word must start with a letter
+            // and may contain letters, apostrophes and hyphens (e.g. O'Brien, Mary-Jane).
+            if (!name.matches("[A-Za-z][A-Za-z'-]*( [A-Za-z][A-Za-z'-]*)+")) {
                 System.out.println("Please enter a first and last name using letters only.");
                 continue;
             }

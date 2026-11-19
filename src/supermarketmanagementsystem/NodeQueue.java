@@ -7,8 +7,6 @@ package supermarketmanagementsystem;
  *
  * @author diogodias
  */
-// Circular array-based FIFO queue of tree nodes.
-// Based on the ArrayQueue from BFSArrayQueue.java shown in class.
 public class NodeQueue {
 
     private EmployeeNode[] items;

@@ -58,6 +58,21 @@ public abstract class Employee {
     public String getCompany() {
         return company;
     }
+    
+    // Fields kept from the data file (not shown in the menu, but available for future reports)
+    public String getGender() {
+        return gender;
+    }
+
+     // Fields kept from the data file (not shown in the menu, but available for future reports)
+    public String getEmail() {
+        return email;
+    }
+
+     // Fields kept from the data file (not shown in the menu, but available for future reports)
+    public double getSalary() {
+        return salary;
+    }
 
     // Each subclass must describe its own employment category
     public abstract String getEmploymentType();
@@ -100,26 +115,5 @@ public abstract class Employee {
                 return Manager.createManager(firstName, lastName, gender, email, salary,
                         department, jobTitle, company);
         }
-    }
-
-    /**
-     * @return the gender
-     */
-    public String getGender() {
-        return gender;
-    }
-
-    /**
-     * @return the email
-     */
-    public String getEmail() {
-        return email;
-    }
-
-    /**
-     * @return the salary
-     */
-    public double getSalary() {
-        return salary;
     }
 }
