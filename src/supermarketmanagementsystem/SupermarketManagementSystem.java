@@ -320,7 +320,11 @@ public class SupermarketManagementSystem {
         tree.buildFromEmployees(database.getEmployees());
 
         System.out.println("Binary tree created successfully.");
-        System.out.println("Root: " + tree.getRoot());
+        System.out.println();
+        System.out.println("Employee hierarchy (level-order traversal):");
+        tree.displayLevelOrder();
+        System.out.println();
+        System.out.println("Tree height: " + tree.height() + " levels");
         System.out.println("Total nodes: " + tree.countNodes());
     }
 }

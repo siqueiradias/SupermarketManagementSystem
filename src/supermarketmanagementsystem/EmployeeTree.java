@@ -87,6 +87,54 @@ public class EmployeeTree {
         return 1 + countNodes(node.left) + countNodes(node.right);
     }
 
+        // Level-order (breadth-first) traversal: visits the tree level by level,
+    // from left to right, using a FIFO queue. Nodes are printed grouped by level.
+    public void displayLevelOrder() {
+        if (root == null) {
+            System.out.println("The tree is empty.");
+            return;
+        }
+
+        NodeQueue queue = new NodeQueue(size + 1);
+        queue.enqueue(root);
+        int level = 1;
+
+        while (!queue.isEmpty()) {
+            // At this point the queue holds exactly the nodes of the current level
+            int nodesInLevel = queue.size();
+            System.out.println("Level " + level + ":");
+
+            for (int i = 0; i < nodesInLevel; i++) {
+                EmployeeNode current = queue.dequeue();
+                System.out.println("  " + current);
+
+                if (current.left != null) {
+                    queue.enqueue(current.left);
+                }
+                if (current.right != null) {
+                    queue.enqueue(current.right);
+                }
+            }
+            level++;
+        }
+    }
+
+    // Height of the tree, measured in levels (empty tree = 0, root only = 1).
+    public int height() {
+        return height(root);
+    }
+
+    private int height(EmployeeNode node) {
+        // Base case: an empty subtree adds no levels
+        if (node == null) {
+            return 0;
+        }
+        int leftHeight = height(node.left);
+        int rightHeight = height(node.right);
+
+        return 1 + Math.max(leftHeight, rightHeight);
+    }
+    
     public EmployeeNode getRoot() {
         return root;
     }

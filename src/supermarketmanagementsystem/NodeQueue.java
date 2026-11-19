@@ -13,12 +13,14 @@ public class NodeQueue {
     private int front;
     private int rear;
     private int capacity;
+    private int count; // number of nodes currently in the queue
 
     public NodeQueue(int capacity) {
         this.capacity = capacity;
         items = new EmployeeNode[capacity];
         front = -1; // -1 means the queue is empty
         rear = -1;
+        count = 0;
     }
 
     public boolean isEmpty() {
@@ -27,6 +29,10 @@ public class NodeQueue {
 
     public boolean isFull() {
         return (rear + 1) % capacity == front;
+    }
+
+    public int size() {
+        return count;
     }
 
     // Adds a node at the rear. Returns false if the queue is full.
@@ -42,6 +48,7 @@ public class NodeQueue {
             rear = (rear + 1) % capacity;
         }
         items[rear] = node;
+        count++;
         return true;
     }
 
@@ -59,6 +66,7 @@ public class NodeQueue {
         } else {
             front = (front + 1) % capacity;
         }
+        count--;
         return node;
     }
 }
