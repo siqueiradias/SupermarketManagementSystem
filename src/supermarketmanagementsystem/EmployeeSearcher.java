@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 import java.util.ArrayList;
@@ -28,15 +27,14 @@ public class EmployeeSearcher {
         int comparison = employees.get(mid).compareNameTo(targetName);
 
         if (comparison == 0) {
-            return mid; // Employee found
+            return mid; // employee found
         }
 
-        // If the middle name comes after the target, search the left half
+        // If the middle name comes after the target, search the left half;
+        // otherwise, search the right half
         if (comparison > 0) {
             return binarySearch(employees, left, mid - 1, targetName);
-        }
-        // Otherwise, search the right half
-        else {
+        } else {
             return binarySearch(employees, mid + 1, right, targetName);
         }
     }

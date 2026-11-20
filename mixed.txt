@@ -1,0 +1,7 @@
+First name,Last name,Gender,Email,Salary,Department,Position,Job title,Company
+Kate,Summer,Female,ksummer@TechInnovators.com,20000.00,IT Development,senior,QA,TechInnovators
+Ken,Winter,Male,kwinter@TechInnovators.com,15000.00,IT Development,middle,backend,TechInnovators
+Bad,Line,Only,Five,Fields
+,NoFirst,Male,x@y.com,100,Sales,junior,Clerk,X
+Ann,Salary,Female,a@b.com,abc,Sales,junior,Clerk,X
+Too,Many,F,e,1,Sales,junior,Clerk,X,EXTRA

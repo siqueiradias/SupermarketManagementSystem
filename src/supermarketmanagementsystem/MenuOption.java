@@ -1,9 +1,9 @@
-
 package supermarketmanagementsystem;
 
 /**
- * Enum with the options of the main menu. The menu is printed by iterating through its values.
- * 
+ * Enum with the options of the main menu. The menu is printed by iterating
+ * through its values.
+ *
  * @author diogodias
  */
 public enum MenuOption {
@@ -17,15 +17,18 @@ public enum MenuOption {
     private final int optionNumber;
     private final String label;
 
+    // Links each option to the number and text shown in the menu.
     MenuOption(int optionNumber, String label) {
         this.optionNumber = optionNumber;
         this.label = label;
     }
 
+    // Returns the number the user types to choose this option.
     public int getOptionNumber() {
         return optionNumber;
     }
 
+    // Returns the text shown in the menu for this option.
     public String getLabel() {
         return label;
     }

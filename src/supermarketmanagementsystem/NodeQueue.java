@@ -1,36 +1,42 @@
-
 package supermarketmanagementsystem;
 
 /**
  * Circular array-based FIFO queue of tree nodes, used for level-order insertion
- * and traversal.
+ * and traversal. Same circular design used in CA-1 (FoodCircularQueue).
  *
  * @author diogodias
  */
 public class NodeQueue {
 
-    private EmployeeNode[] items;
-    private int front;
-    private int rear;
-    private int capacity;
+    private final EmployeeNode[] items;
+    private final int capacity;
+    private int front; // index of the next node to remove
+    private int rear;  // index of the last node added
     private int count; // number of nodes currently in the queue
 
+    // Creates an empty queue that can hold up to 'capacity' nodes.
     public NodeQueue(int capacity) {
         this.capacity = capacity;
         items = new EmployeeNode[capacity];
-        front = -1; // -1 means the queue is empty
+        front = 0;
         rear = -1;
         count = 0;
     }
 
+    // The queue is empty when it holds no nodes.
     public boolean isEmpty() {
-        return front == -1;
+        return count == 0;
     }
 
+    // The queue is full when the number of nodes equals the size of the array.
+    // The counter makes this clear and reliable: comparing only front and rear
+    // could not tell a full queue from an empty one, because in both cases
+    // rear sits just before front in the circle.
     public boolean isFull() {
-        return (rear + 1) % capacity == front;
+        return count == capacity;
     }
 
+    // Returns the number of nodes currently in the queue.
     public int size() {
         return count;
     }
@@ -41,12 +47,9 @@ public class NodeQueue {
             System.out.println("Queue is full!");
             return false;
         }
-        if (isEmpty()) {
-            front = 0;
-            rear = 0;
-        } else {
-            rear = (rear + 1) % capacity;
-        }
+        // Move rear one position forward; % capacity wraps it back to 0
+        // after the last index (e.g. capacity 8: (7 + 1) % 8 = 0)
+        rear = (rear + 1) % capacity;
         items[rear] = node;
         count++;
         return true;
@@ -57,15 +60,10 @@ public class NodeQueue {
         if (isEmpty()) {
             return null;
         }
-
         EmployeeNode node = items[front];
-
-        if (front == rear) { // last element removed
-            front = -1;
-            rear = -1;
-        } else {
-            front = (front + 1) % capacity;
-        }
+        items[front] = null;
+        // Move front one position forward, wrapping around in the same way as rear
+        front = (front + 1) % capacity;
         count--;
         return node;
     }

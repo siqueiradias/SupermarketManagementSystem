@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 import java.util.ArrayList;

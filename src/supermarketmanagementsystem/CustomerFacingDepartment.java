@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 /**
@@ -8,10 +7,12 @@ package supermarketmanagementsystem;
  */
 public class CustomerFacingDepartment extends Department {
 
+    // Creates a customer-facing department with the given name.
     public CustomerFacingDepartment(String departmentName) {
         super(departmentName);
     }
 
+    // Returns the type of this department.
     @Override
     public String getDepartmentType() {
         return "Customer-Facing Department";

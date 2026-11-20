@@ -1,10 +1,9 @@
-
 package supermarketmanagementsystem;
 
 import java.util.ArrayList;
 
 /**
- * Binary tree that represents the employee hierarchy, 
+ * Binary tree that represents the employee hierarchy,
  * with level-order insertion and traversal, height and node count.
  *
  * @author diogodias
@@ -14,6 +13,7 @@ public class EmployeeTree {
     private EmployeeNode root;
     private int size; // number of nodes, used to size the queue
 
+    // Creates an empty tree.
     public EmployeeTree() {
         root = null;
         size = 0;
@@ -31,6 +31,7 @@ public class EmployeeTree {
             return;
         }
 
+        // size + 1 is always enough: the queue never holds more nodes than the tree has
         NodeQueue queue = new NodeQueue(size + 1);
         queue.enqueue(root);
 
@@ -77,19 +78,7 @@ public class EmployeeTree {
         }
     }
 
-    // Counts all nodes recursively (same approach as countNodes in BFSArrayQueue.java)
-    public int countNodes() {
-        return countNodes(root);
-    }
-
-    private int countNodes(EmployeeNode node) {
-        if (node == null) {
-            return 0;
-        }
-        return 1 + countNodes(node.left) + countNodes(node.right);
-    }
-
-        // Level-order (breadth-first) traversal: visits the tree level by level,
+    // Level-order (breadth-first) traversal: visits the tree level by level,
     // from left to right, using a FIFO queue. Nodes are printed grouped by level.
     public void displayLevelOrder() {
         if (root == null) {
@@ -121,11 +110,12 @@ public class EmployeeTree {
         }
     }
 
-    // Height of the tree, measured in levels (empty tree = 0, root only = 1).
+    // Returns the height of the tree, measured in levels (empty tree = 0, root only = 1).
     public int height() {
         return height(root);
     }
 
+    // Recursive helper: height of the subtree that starts at 'node'.
     private int height(EmployeeNode node) {
         // Base case: an empty subtree adds no levels
         if (node == null) {
@@ -136,7 +126,23 @@ public class EmployeeTree {
 
         return 1 + Math.max(leftHeight, rightHeight);
     }
-    
+
+    // Returns the total number of nodes in the tree.
+    public int countNodes() {
+        return countNodes(root);
+    }
+
+    // Recursive helper (same approach as countNodes in BFSArrayQueue.java):
+    // each node counts itself plus the nodes in its two subtrees.
+    private int countNodes(EmployeeNode node) {
+        // Base case: an empty subtree has no nodes
+        if (node == null) {
+            return 0;
+        }
+        return 1 + countNodes(node.left) + countNodes(node.right);
+    }
+
+    // Returns the root node (the top of the hierarchy).
     public EmployeeNode getRoot() {
         return root;
     }

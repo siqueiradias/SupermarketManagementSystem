@@ -1,4 +1,3 @@
-
 package supermarketmanagementsystem;
 
 /**
@@ -8,53 +7,42 @@ package supermarketmanagementsystem;
  */
 public abstract class Manager extends Employee {
 
+    // Creates a manager. All the data is stored by the Employee parent class.
     public Manager(String firstName, String lastName, String gender, String email,
             double salary, Department department, String jobTitle, String company) {
         super(firstName, lastName, gender, email, salary, department, jobTitle, company);
     }
 
-    // A manager is still an employee, but every manager is also assigned
-    // to a management level, described by this abstract method.
+    // Returns the management level. Each subclass must provide its own.
     public abstract String getManagementLevel();
 
+    // Returns the employment type, built from the management level.
     @Override
     public String getEmploymentType() {
         return "Manager - " + getManagementLevel();
     }
 
-    // Factory method: decides which subclass to create based on the
-    // "Job title" field from the data file. Called by
-    // Employee.createEmployee() whenever Position is empty.
+    // Factory method: creates the correct subclass based on the "Job title" field.
+    // Called by Employee.createEmployee() whenever Position is empty,
+    // and when the user adds a new manager.
     public static Manager createManager(String firstName, String lastName, String gender,
             String email, double salary, Department department, String jobTitle,
             String company) {
 
         String title = jobTitle == null ? "" : jobTitle.trim();
 
-        switch (title) {
-            case "Head Manager":
-                return new HeadManager(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-
-            case "Manager":
-            case "Senior Manager":
-                return new DepartmentManager(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-
-            case "Assistant Manager":
-                return new AssistantManager(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-
-            case "Team Lead":
-                return new TeamLead(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-
-            default:
-                // Fallback for any management title not seen in the sample data
-                return new DepartmentManager(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-        }
+        return switch (title) {
+            case "Head Manager" -> new HeadManager(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            case "Manager", "Senior Manager" -> new DepartmentManager(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            case "Assistant Manager" -> new AssistantManager(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            case "Team Lead" -> new TeamLead(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            // Fallback for any management title not seen in the sample data
+            default -> new DepartmentManager(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+        };
     }
-}    
-
-
+}

@@ -1,22 +1,23 @@
 package supermarketmanagementsystem;
 
 /**
- * Parent class for everyone in the organisation. 
+ * Parent class for everyone in the organisation.
  * Holds the data read from the file and creates the correct employee type.
  *
  * @author diogodias
  */
 public abstract class Employee {
 
-    protected String firstName;
-    protected String lastName;
-    private String gender;
-    private String email;
-    private double salary;
-    protected Department department;
-    protected String jobTitle;
-    protected String company;
+    private final String firstName;
+    private final String lastName;
+    private final String gender;
+    private final String email;
+    private final double salary;
+    private final Department department;
+    private final String jobTitle;
+    private final String company;
 
+    // Creates an employee with the data read from the file or typed by the user.
     public Employee(String firstName, String lastName, String gender, String email,
             double salary, Department department, String jobTitle, String company) {
         this.firstName = firstName;
@@ -29,16 +30,49 @@ public abstract class Employee {
         this.company = company;
     }
 
+    // Returns the first name.
     public String getFirstName() {
         return firstName;
     }
 
+    // Returns the last name.
     public String getLastName() {
         return lastName;
     }
 
+    // Returns the full name in the format "First Last".
     public String getFullName() {
         return firstName + " " + lastName;
+    }
+
+    // Returns the gender (kept from the data file for future reports).
+    public String getGender() {
+        return gender;
+    }
+
+    // Returns the email (kept from the data file for future reports).
+    public String getEmail() {
+        return email;
+    }
+
+    // Returns the salary (kept from the data file for future reports).
+    public double getSalary() {
+        return salary;
+    }
+
+    // Returns the department this employee belongs to.
+    public Department getDepartment() {
+        return department;
+    }
+
+    // Returns the job title, e.g. "Senior Manager".
+    public String getJobTitle() {
+        return jobTitle;
+    }
+
+    // Returns the company, interpreted as the store or branch of the chain.
+    public String getCompany() {
+        return company;
     }
 
     // Compares this employee's full name with another name, ignoring case.
@@ -47,73 +81,38 @@ public abstract class Employee {
         return getFullName().compareToIgnoreCase(otherName.trim());
     }
 
-    public Department getDepartment() {
-        return department;
-    }
-
-    public String getJobTitle() {
-        return jobTitle;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-    
-    // Fields kept from the data file (not shown in the menu, but available for future reports)
-    public String getGender() {
-        return gender;
-    }
-
-     // Fields kept from the data file (not shown in the menu, but available for future reports)
-    public String getEmail() {
-        return email;
-    }
-
-     // Fields kept from the data file (not shown in the menu, but available for future reports)
-    public double getSalary() {
-        return salary;
-    }
-
-    // Each subclass must describe its own employment category
+    // Returns the employment category. Each subclass must provide its own.
     public abstract String getEmploymentType();
 
-    // Position in the organisational hierarchy: 1 is the highest level.
+    // Returns the position in the organisational hierarchy (1 is the highest level).
     // Used to decide where each employee goes in the binary tree.
     public abstract int getHierarchyRank();
 
+    // Returns a one-line summary: name, job title, employment type and department.
     @Override
     public String toString() {
         return getFullName() + " - " + jobTitle + " (" + getEmploymentType()
                 + ") - " + department.getDepartmentName();
     }
 
-    // Factory method: decides which subclass to create based on the
-    // "Position" field from the data file.
+    // Factory method: creates the correct subclass based on the "Position" field
+    // from the data file. An empty Position means the record is a manager.
     public static Employee createEmployee(String firstName, String lastName, String gender,
             String email, double salary, Department department, String position,
             String jobTitle, String company) {
 
         String pos = position == null ? "" : position.trim().toLowerCase();
 
-        switch (pos) {
-            case "junior":
-            case "middle":
-            case "senior":
-                return new StaffEmployee(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company, pos);
-
-            case "contract":
-                return new ContractEmployee(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-
-            case "intern":
-                return new Intern(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-
-            default:
-                // Empty Position means this record is a manager, not a regular employee
-                return Manager.createManager(firstName, lastName, gender, email, salary,
-                        department, jobTitle, company);
-        }
+        return switch (pos) {
+            case "junior", "middle", "senior" -> new StaffEmployee(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company, pos);
+            case "contract" -> new ContractEmployee(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            case "intern" -> new Intern(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            // Empty Position: the Manager class decides the type from the job title
+            default -> Manager.createManager(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+        };
     }
 }

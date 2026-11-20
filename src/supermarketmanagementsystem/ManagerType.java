@@ -1,9 +1,8 @@
-
 package supermarketmanagementsystem;
 
 /**
  * Enum with the valid manager types a user can choose when adding a new record.
- * 
+ *
  * @author diogodias
  */
 public enum ManagerType {
@@ -16,17 +15,19 @@ public enum ManagerType {
     private final int optionNumber;
     private final String jobTitle;
 
+    // Links each manager type to the number and job title shown to the user.
     ManagerType(int optionNumber, String jobTitle) {
         this.optionNumber = optionNumber;
         this.jobTitle = jobTitle;
     }
 
+    // Returns the number the user types to choose this manager type.
     public int getOptionNumber() {
         return optionNumber;
     }
 
-    // The job title is passed to Manager.createManager(), which uses it
-    // to create the correct Manager subclass.
+    // Returns the job title. It is passed to Manager.createManager(),
+    // which uses it to create the correct Manager subclass.
     public String getJobTitle() {
         return jobTitle;
     }

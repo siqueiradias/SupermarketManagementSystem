@@ -7,17 +7,20 @@ import java.util.Scanner;
  * Entry point of the program. Loads the data file and runs the console menu
  * (sort, search, add records, binary tree).
  *
+ * Input validation rule used everywhere: every input is checked and, if it is
+ * invalid, the user sees the reason and is asked again. The program never
+ * crashes on bad input and never stores invalid data.
+ *
  * @author diogodias
  */
 public class SupermarketManagementSystem {
 
-    private static final int DISPLAY_LIMIT = 20;
-    private static final String NOT_SPECIFIED = "N/A";
-    private static final int MIN_TREE_RECORDS = 20;
+    private static final int DISPLAY_LIMIT = 20;      // names shown after sorting
+    private static final int MIN_TREE_RECORDS = 20;   // minimum records to build the tree
+    private static final int MAX_NAME_LENGTH = 50;    // maximum length of a new employee name
+    private static final String NOT_SPECIFIED = "N/A"; // value for fields not asked to the user
 
-    /**
-     * @param args the command line arguments
-     */
+    // Program entry point: loads the data file, then shows the menu until the user exits.
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         EmployeeDatabase database = new EmployeeDatabase();
@@ -31,30 +34,24 @@ public class SupermarketManagementSystem {
             choice = readMenuChoice(sc);
 
             switch (choice) {
-                case SORT:
+                case SORT -> {
                     System.out.println("SORT selected");
                     database.sortByName();
                     displayFirstEmployees(database, DISPLAY_LIMIT);
-                    break;
-
-                case SEARCH:
+                }
+                case SEARCH -> {
                     System.out.println("SEARCH selected");
                     searchEmployee(sc, database);
-                    break;
-
-                case ADD_RECORDS:
+                }
+                case ADD_RECORDS -> {
                     System.out.println("ADD RECORDS selected");
                     addEmployees(sc, database);
-                    break;
-
-                case CREATE_BINARY_TREE:
+                }
+                case CREATE_BINARY_TREE -> {
                     System.out.println("Create Binary Tree selected");
                     buildEmployeeTree(database);
-                    break;
-
-                case EXIT:
-                    System.out.println("Exiting the program. Goodbye!");
-                    break;
+                }
+                case EXIT -> System.out.println("Exiting the program. Goodbye!");
             }
 
         } while (choice != MenuOption.EXIT);
@@ -62,24 +59,41 @@ public class SupermarketManagementSystem {
         sc.close();
     }
 
-    // Asks for the data file name until a valid file is read.
-    private static void loadDataFile(Scanner sc, EmployeeDatabase database) {
-        boolean loaded = false;
+    // ---------- File loading ----------
 
-        while (!loaded) {
+    // Asks for the data file name until a file with valid employee records is read.
+    private static void loadDataFile(Scanner sc, EmployeeDatabase database) {
+        while (true) {
             System.out.println("Please enter the filename to read:");
             String filename = sc.nextLine().trim();
 
-            loaded = database.loadFromFile(filename);
-
-            if (loaded) {
-                System.out.println("File read successfully");
-                System.out.println("Total employees loaded: " + database.getCount());
-            } else {
-                System.out.println("File not found: " + filename + ". Please try again.");
+            if (filename.isEmpty()) {
+                System.out.println("Filename cannot be empty.");
+                continue;
             }
+
+            if (!database.loadFromFile(filename)) {
+                System.out.println("File not found: " + filename + ". Please try again.");
+                continue;
+            }
+
+            if (database.getCount() == 0) {
+                System.out.println("The file \"" + filename
+                        + "\" has no valid employee records. Please choose another file.");
+                continue;
+            }
+
+            System.out.println("File read successfully");
+            System.out.println("Total employees loaded: " + database.getCount());
+
+            if (database.getSkippedLines() > 0) {
+                System.out.println("Invalid lines skipped: " + database.getSkippedLines());
+            }
+            return;
         }
     }
+
+    // ---------- Menu ----------
 
     // Prints every menu option by iterating through the MenuOption enum.
     private static void displayMenu() {
@@ -91,28 +105,13 @@ public class SupermarketManagementSystem {
         }
     }
 
-    // Reads the user's choice and keeps asking until it is a valid option.
+    // Reads the user's choice and keeps asking until it matches a menu option.
     private static MenuOption readMenuChoice(Scanner sc) {
-        int totalOptions = MenuOption.values().length;
-
-        while (true) {
-            String input = sc.nextLine().trim();
-
-            try {
-                int number = Integer.parseInt(input);
-                MenuOption option = MenuOption.fromNumber(number);
-
-                if (option != null) {
-                    return option;
-                }
-            } catch (NumberFormatException e) {
-                // Not a number - handled by the message below
-            }
-
-            System.out.println("Invalid option. Please enter a number between 1 and "
-                    + totalOptions + ":");
-        }
+        int number = readNumberInRange(sc, 1, MenuOption.values().length);
+        return MenuOption.fromNumber(number);
     }
+
+    // ---------- Sort ----------
 
     // Displays the first employees of the list (up to the given limit).
     private static void displayFirstEmployees(EmployeeDatabase database, int limit) {
@@ -131,19 +130,12 @@ public class SupermarketManagementSystem {
         }
     }
 
+    // ---------- Search ----------
+
     // Asks for a name, searches for it and shows the employee's details.
     private static void searchEmployee(Scanner sc, EmployeeDatabase database) {
-        String name = "";
-
-        while (name.isEmpty()) {
-            System.out.println("Please enter the full name to search (e.g. John Smith):");
-            // trim() removes outer spaces; replaceAll joins repeated inner spaces into one
-            name = sc.nextLine().trim().replaceAll("\\s+", " ");
-
-            if (name.isEmpty()) {
-                System.out.println("Name cannot be empty.");
-            }
-        }
+        String name = readNonEmptyText(sc,
+                "Please enter the full name to search (e.g. John Smith):", "Name");
 
         Employee found = database.findByName(name);
 
@@ -162,11 +154,13 @@ public class SupermarketManagementSystem {
 
     // Returns the management level for managers, or the employment type otherwise.
     private static String getManagerType(Employee employee) {
-        if (employee instanceof Manager) {
-            return ((Manager) employee).getManagementLevel();
+        if (employee instanceof Manager manager) {
+            return manager.getManagementLevel();
         }
         return "Not a manager (" + employee.getEmploymentType() + ")";
     }
+
+    // ---------- Add records ----------
 
     // Lets the user add one or more new managers, then shows all newly added records.
     private static void addEmployees(Scanner sc, EmployeeDatabase database) {
@@ -183,7 +177,7 @@ public class SupermarketManagementSystem {
             String firstName = name.substring(0, spaceIndex);
             String lastName = name.substring(spaceIndex + 1);
 
-            // Manager type choice, listed from the ManagerType enum
+            // Manager type: only the types listed in the ManagerType enum can be chosen
             System.out.println("Please select from the following Management Staff:");
             for (ManagerType type : ManagerType.values()) {
                 System.out.println(type.getOptionNumber() + ". " + type.getJobTitle());
@@ -191,7 +185,7 @@ public class SupermarketManagementSystem {
             int typeNumber = readNumberInRange(sc, 1, ManagerType.values().length);
             ManagerType managerType = ManagerType.fromNumber(typeNumber);
 
-            // Department choice, listed from the departments that already exist
+            // Department: only departments that already exist in the data can be chosen
             System.out.println("Please select the Department:");
             for (int i = 0; i < departmentNames.size(); i++) {
                 System.out.println((i + 1) + ". " + departmentNames.get(i));
@@ -216,14 +210,16 @@ public class SupermarketManagementSystem {
         displayNewEmployees(database);
     }
 
-    // Reads and validates the new employee's full name.
+    // Reads and validates the new employee's full name. Checks, in order:
+    // not empty, not too long, correct format, and not already in the list.
     private static String readNewEmployeeName(Scanner sc, EmployeeDatabase database) {
         while (true) {
-            System.out.println("Please input the Employee Name (first and last name):");
-            String name = sc.nextLine().trim().replaceAll("\\s+", " ");
+            String name = readNonEmptyText(sc,
+                    "Please input the Employee Name (first and last name):", "Name");
 
-            if (name.isEmpty()) {
-                System.out.println("Name cannot be empty.");
+            if (name.length() > MAX_NAME_LENGTH) {
+                System.out.println("Name is too long. Please use up to "
+                        + MAX_NAME_LENGTH + " characters.");
                 continue;
             }
 
@@ -262,41 +258,6 @@ public class SupermarketManagementSystem {
         return result;
     }
 
-    // Reads a whole number and keeps asking until it is between min and max.
-    private static int readNumberInRange(Scanner sc, int min, int max) {
-        while (true) {
-            String input = sc.nextLine().trim();
-
-            try {
-                int number = Integer.parseInt(input);
-                if (number >= min && number <= max) {
-                    return number;
-                }
-            } catch (NumberFormatException e) {
-                // Not a number - handled by the message below
-            }
-
-            System.out.println("Invalid choice. Please enter a number between "
-                    + min + " and " + max + ":");
-        }
-    }
-
-    // Asks a yes/no question and keeps asking until the answer is Y or N.
-    private static boolean askYesNo(Scanner sc, String question) {
-        while (true) {
-            System.out.println(question + " (Y/N):");
-            String answer = sc.nextLine().trim().toUpperCase();
-
-            if (answer.equals("Y")) {
-                return true;
-            }
-            if (answer.equals("N")) {
-                return false;
-            }
-            System.out.println("Please answer Y or N.");
-        }
-    }
-
     // Shows every record the user has added during this run.
     private static void displayNewEmployees(EmployeeDatabase database) {
         ArrayList<Employee> newEmployees = database.getNewEmployees();
@@ -307,7 +268,10 @@ public class SupermarketManagementSystem {
         }
     }
 
-    // Builds the employee hierarchy as a binary tree using level-order insertion.
+    // ---------- Binary tree ----------
+
+    // Builds the employee hierarchy as a binary tree using level-order insertion,
+    // then shows the level-order traversal, the height and the number of nodes.
     private static void buildEmployeeTree(EmployeeDatabase database) {
         if (database.getCount() < MIN_TREE_RECORDS) {
             System.out.println("At least " + MIN_TREE_RECORDS
@@ -329,5 +293,56 @@ public class SupermarketManagementSystem {
         System.out.println();
         System.out.println("Tree height: " + tree.height() + " levels");
         System.out.println("Total nodes: " + tree.countNodes());
+    }
+
+    // ---------- Reusable input helpers ----------
+
+    // Shows a prompt and reads text until it is not empty.
+    // Extra spaces are removed: outer spaces with trim(), repeated inner spaces with replaceAll().
+    private static String readNonEmptyText(Scanner sc, String prompt, String fieldName) {
+        while (true) {
+            System.out.println(prompt);
+            String text = sc.nextLine().trim().replaceAll("\\s+", " ");
+
+            if (!text.isEmpty()) {
+                return text;
+            }
+            System.out.println(fieldName + " cannot be empty.");
+        }
+    }
+
+    // Reads a whole number and keeps asking until it is between min and max.
+    private static int readNumberInRange(Scanner sc, int min, int max) {
+        while (true) {
+            String input = sc.nextLine().trim();
+
+            try {
+                int number = Integer.parseInt(input);
+                if (number >= min && number <= max) {
+                    return number;
+                }
+            } catch (NumberFormatException e) {
+                // Not a whole number: handled by the message below
+            }
+
+            System.out.println("Invalid choice. Please enter a number between "
+                    + min + " and " + max + ":");
+        }
+    }
+
+    // Asks a yes/no question and keeps asking until the answer is Y or N.
+    private static boolean askYesNo(Scanner sc, String question) {
+        while (true) {
+            System.out.println(question + " (Y/N):");
+            String answer = sc.nextLine().trim().toUpperCase();
+
+            if (answer.equals("Y")) {
+                return true;
+            }
+            if (answer.equals("N")) {
+                return false;
+            }
+            System.out.println("Please answer Y or N.");
+        }
     }
 }

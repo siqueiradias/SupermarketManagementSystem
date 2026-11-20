@@ -7,8 +7,9 @@ package supermarketmanagementsystem;
  */
 public class StaffEmployee extends Employee {
 
-    private String seniorityLevel; // junior, middle or senior
+    private final String seniorityLevel; // junior, middle or senior
 
+    // Creates a staff employee with the given seniority level.
     public StaffEmployee(String firstName, String lastName, String gender, String email,
             double salary, Department department, String jobTitle, String company,
             String seniorityLevel) {
@@ -16,24 +17,24 @@ public class StaffEmployee extends Employee {
         this.seniorityLevel = seniorityLevel;
     }
 
+    // Returns the seniority level: junior, middle or senior.
     public String getSeniorityLevel() {
         return seniorityLevel;
     }
 
+    // Returns the employment type, including the seniority level.
     @Override
     public String getEmploymentType() {
         return "Staff - " + seniorityLevel;
     }
 
+    // Senior staff rank 5, middle 6 and junior 7 in the hierarchy.
     @Override
     public int getHierarchyRank() {
-        switch (seniorityLevel) {
-            case "senior":
-                return 5;
-            case "middle":
-                return 6;
-            default: // junior
-                return 7;
-        }
+        return switch (seniorityLevel) {
+            case "senior" -> 5;
+            case "middle" -> 6;
+            default -> 7; // junior
+        };
     }
 }
