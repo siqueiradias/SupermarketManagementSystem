@@ -98,6 +98,16 @@ public abstract class Employee {
                 + ") - " + department.getDepartmentName();
     }
 
+    // Builds an email in the same format as the data file: first initial + last name
+    // @ store .com, e.g. jsmith@DataVision.com. Returns "N/A" if the store is unknown.
+    public static String createEmail(String firstName, String lastName, String store) {
+        if (store.equals(NOT_SPECIFIED)) {
+            return NOT_SPECIFIED;
+        }
+        String user = (firstName.charAt(0) + lastName).toLowerCase().replace("'", "");
+        return user + "@" + store + ".com";
+    }
+
     // Factory method: creates the correct subclass based on the "Position" field
     // from the data file. An empty Position means the record is a manager.
     public static Employee createEmployee(String firstName, String lastName, String gender,

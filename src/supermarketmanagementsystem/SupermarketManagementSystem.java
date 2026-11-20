@@ -17,8 +17,8 @@ public class SupermarketManagementSystem {
 
     private static final int DISPLAY_LIMIT = 20;      // names shown after sorting
     private static final int MIN_TREE_RECORDS = 20;   // minimum records to build the tree
-    private static final int MAX_NAME_LENGTH = 50;    // maximum length of a new employee name
     private static final int MAX_RANDOM_RECORDS = 50; // maximum records generated at once
+    private static final String CHAIN_NAME = "GreenBasket Foods"; // fictional supermarket chain
 
     // Program entry point: loads the data file, then shows the menu until the user exits.
     public static void main(String[] args) {
@@ -75,8 +75,8 @@ public class SupermarketManagementSystem {
     // Shows the name of the organisation modelled by the program.
     private static void displayWelcome() {
         System.out.println("==============================================");
-        System.out.println("        SUPERMARKET MANAGEMENT SYSTEM");
-        System.out.println("  Staff records of a large supermarket chain");
+        System.out.println("              " + CHAIN_NAME.toUpperCase());
+        System.out.println("   Supermarket chain - Staff Management System");
         System.out.println("==============================================");
     }
 
@@ -94,12 +94,12 @@ public class SupermarketManagementSystem {
             }
 
             if (filename.isEmpty()) {
-                System.out.println("Filename cannot be empty.");
+                System.out.println("Filename cannot be empty.\n");
                 continue;
             }
 
             if (!database.loadFromFile(filename)) {
-                System.out.println("File not found: " + filename + ". Please try again.");
+                System.out.println("File not found: " + filename + ". Please try again.\n");
                 continue;
             }
 
@@ -175,7 +175,7 @@ public class SupermarketManagementSystem {
         System.out.println("  Job Title:    " + found.getJobTitle());
         System.out.println("  Manager Type: " + getManagerType(found));
         System.out.println("  Department:   " + found.getDepartment());
-        System.out.println("  Company:      " + found.getCompany());
+        System.out.println("  Store:        " + found.getCompany());
     }
 
     // Returns the management level for managers, or the employment type otherwise.
@@ -191,6 +191,7 @@ public class SupermarketManagementSystem {
     // Lets the user add one or more new managers, then shows all newly added records.
     private static void addEmployees(Scanner sc, EmployeeDatabase database) {
         ArrayList<String> departmentNames = database.getDepartmentNames();
+        ArrayList<String> storeNames = database.getCompanyNames();
 
         do {
             String name = readNewEmployeeName(sc, database);
@@ -202,7 +203,7 @@ public class SupermarketManagementSystem {
             ManagerType managerType = readManagerType(sc, database);
 
             // Department: only departments that exist in the supermarket can be chosen.
-            // Each one is shown with its type, e.g. "Bakery (Customer-Facing Department)".
+            // Each one is shown with its type, e.g. "Bakery (Fresh Food Department)".
             System.out.println("Please select the Department:");
             for (int i = 0; i < departmentNames.size(); i++) {
                 System.out.println((i + 1) + ". "
@@ -213,10 +214,24 @@ public class SupermarketManagementSystem {
 
             Department department = Department.createDepartment(departmentName);
 
-            // Fields the brief does not ask for are stored as "N/A" (salary as 0.0)
+            // Store: only stores (branches) of the chain that exist in the data can be chosen
+            String store = Employee.NOT_SPECIFIED;
+            if (!storeNames.isEmpty()) {
+                System.out.println("Please select the Store (branch of " + CHAIN_NAME + "):");
+                for (int i = 0; i < storeNames.size(); i++) {
+                    System.out.println((i + 1) + ". " + storeNames.get(i));
+                }
+                int storeNumber = readNumberInRange(sc, 1, storeNames.size());
+                store = storeNames.get(storeNumber - 1);
+            }
+
+            // The email is built from the name and the store, in the data-file format.
+            // Gender and salary are not asked by the brief, so they are stored as "N/A" and 0.0.
+            String email = Employee.createEmail(firstName, lastName, store);
+
             Employee newEmployee = Manager.createManager(firstName, lastName,
-                    Employee.NOT_SPECIFIED, Employee.NOT_SPECIFIED, 0.0, department,
-                    managerType.getJobTitle(), Employee.NOT_SPECIFIED);
+                    Employee.NOT_SPECIFIED, email, 0.0, department,
+                    managerType.getJobTitle(), store);
 
             database.addNewEmployee(newEmployee);
 
@@ -229,27 +244,21 @@ public class SupermarketManagementSystem {
         displayNewEmployees(database);
     }
 
-    // Reads and validates the new employee's full name. Checks, in order:
-    // not empty, not too long, correct format, and not already in the list.
+    // Reads and validates the new employee's full name. The format rules (not empty,
+    // not too long, first and last name, letters only) are checked by NameValidator;
+    // this method also checks that the name is not already in the list.
     private static String readNewEmployeeName(Scanner sc, EmployeeDatabase database) {
         while (true) {
-            String name = readNonEmptyText(sc,
-                    "Please input the Employee Name (first and last name):", "Name");
+            System.out.println("Please input the Employee Name (first and last name):");
+            String name = NameValidator.normalise(sc.nextLine());
 
-            if (name.length() > MAX_NAME_LENGTH) {
-                System.out.println("Name is too long. Please use up to "
-                        + MAX_NAME_LENGTH + " characters.");
+            String error = NameValidator.validate(name);
+            if (error != null) {
+                System.out.println(error);
                 continue;
             }
 
-            // At least two words (first and last name). Each word must start with a letter
-            // and may contain letters, apostrophes and hyphens (e.g. O'Brien, Mary-Jane).
-            if (!name.matches("[A-Za-z][A-Za-z'-]*( [A-Za-z][A-Za-z'-]*)+")) {
-                System.out.println("Please enter a first and last name using letters only.");
-                continue;
-            }
-
-            name = capitaliseWords(name);
+            name = NameValidator.capitalise(name);
 
             // Names must be unique, because the Binary Search relies on them
             if (database.findByName(name) != null) {
@@ -283,29 +292,14 @@ public class SupermarketManagementSystem {
         }
     }
 
-    // Makes the first letter of each word upper case, e.g. "john joe" -> "John Joe".
-    private static String capitaliseWords(String text) {
-        String[] words = text.split(" ");
-        String result = "";
-
-        for (int i = 0; i < words.length; i++) {
-            String word = words[i];
-            result += Character.toUpperCase(word.charAt(0)) + word.substring(1);
-
-            if (i < words.length - 1) {
-                result += " ";
-            }
-        }
-        return result;
-    }
-
     // Shows every record the user has added during this run.
     private static void displayNewEmployees(EmployeeDatabase database) {
         ArrayList<Employee> newEmployees = database.getNewEmployees();
 
         System.out.println("Newly added records (" + newEmployees.size() + "):");
         for (Employee employee : newEmployees) {
-            System.out.println("  " + employee);
+            System.out.println("  " + employee + " - " + employee.getCompany()
+                    + " - " + employee.getEmail());
         }
     }
 
@@ -361,7 +355,7 @@ public class SupermarketManagementSystem {
 
         System.out.println("Binary tree created successfully.");
         System.out.println();
-        System.out.println("Supermarket staff hierarchy (level-order traversal):");
+        System.out.println(CHAIN_NAME + " staff hierarchy (level-order traversal):");
         tree.displayLevelOrder();
         System.out.println();
         System.out.println("Tree height: " + tree.height() + " levels");

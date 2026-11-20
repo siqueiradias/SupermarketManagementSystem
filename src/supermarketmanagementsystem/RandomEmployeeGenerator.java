@@ -78,7 +78,7 @@ public class RandomEmployeeGenerator {
         Department department = Department.createDepartment(departmentName);
 
         String company = companyNames.isEmpty() ? Employee.NOT_SPECIFIED : pick(companyNames);
-        String email = createEmail(firstName, lastName, company);
+        String email = Employee.createEmail(firstName, lastName, company);
 
         // Decide the category: 10% managers, 60% staff, 15% contract, 15% interns
         int roll = random.nextInt(100); // a number from 0 to 99
@@ -160,15 +160,6 @@ public class RandomEmployeeGenerator {
     private double randomAmount(double min, double max) {
         double amount = min + random.nextDouble() * (max - min);
         return Math.round(amount * 100) / 100.0;
-    }
-
-    // Builds an email in the same format as the data file, e.g. jsmith@DataVision.com.
-    private String createEmail(String firstName, String lastName, String company) {
-        if (company.equals(Employee.NOT_SPECIFIED)) {
-            return Employee.NOT_SPECIFIED;
-        }
-        String user = (firstName.charAt(0) + lastName).toLowerCase().replace("'", "");
-        return user + "@" + company + ".com";
     }
 
     // Returns a random item from an array.
