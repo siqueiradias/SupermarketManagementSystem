@@ -1,7 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
- * Department that keeps the store running (Operations, IT Development, Technical Support).
+ * Department that keeps the store running: Operations, IT Development,
+ * Technical Support and Warehouse.
  *
  * @author diogodias
  */

@@ -1,7 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
- * Manager responsible for a department (Manager and Senior Manager titles).
+ * Manager responsible for one or more departments, e.g. a bakery or deli manager
+ * (job titles Manager and Senior Manager in the data file).
  *
  * @author diogodias
  */
@@ -19,9 +20,9 @@ public class DepartmentManager extends Manager {
         return "Department Manager";
     }
 
-    // Department managers rank 2 in the hierarchy.
+    // Department managers rank 3, below the Assistant Manager.
     @Override
     public int getHierarchyRank() {
-        return 2;
+        return 3;
     }
 }

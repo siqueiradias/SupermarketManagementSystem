@@ -1,7 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
- * Highest management level in the store.
+ * Head of the store (Store Manager): responsible for daily operations,
+ * customer service and sales. The highest management level.
  *
  * @author diogodias
  */

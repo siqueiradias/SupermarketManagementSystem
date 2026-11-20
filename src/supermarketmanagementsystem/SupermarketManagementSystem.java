@@ -25,7 +25,14 @@ public class SupermarketManagementSystem {
         Scanner sc = new Scanner(System.in);
         EmployeeDatabase database = new EmployeeDatabase();
 
-        loadDataFile(sc, database);
+        displayWelcome();
+
+        // The menu is only shown once the data is loaded, because every option depends on it
+        if (!loadDataFile(sc, database)) {
+            System.out.println("Exiting the program. Goodbye!");
+            sc.close();
+            return;
+        }
 
         MenuOption choice;
 
@@ -55,8 +62,7 @@ public class SupermarketManagementSystem {
                     System.out.println("Create Binary Tree selected");
                     buildEmployeeTree(database);
                 }
-                case EXIT ->
-                    System.out.println("Exiting the program. Goodbye!");
+                case EXIT -> System.out.println("Exiting the program. Goodbye!");
             }
 
         } while (choice != MenuOption.EXIT);
@@ -64,12 +70,28 @@ public class SupermarketManagementSystem {
         sc.close();
     }
 
+    // ---------- Welcome ----------
+
+    // Shows the name of the organisation modelled by the program.
+    private static void displayWelcome() {
+        System.out.println("==============================================");
+        System.out.println("        SUPERMARKET MANAGEMENT SYSTEM");
+        System.out.println("  Staff records of a large supermarket chain");
+        System.out.println("==============================================");
+    }
+
     // ---------- File loading ----------
+
     // Asks for the data file name until a file with valid employee records is read.
-    private static void loadDataFile(Scanner sc, EmployeeDatabase database) {
+    // Returns true when the data is loaded, or false if the user types EXIT to quit.
+    private static boolean loadDataFile(Scanner sc, EmployeeDatabase database) {
         while (true) {
-            System.out.println("Please enter the filename to read:");
+            System.out.println("Please enter the filename to read (or type EXIT to quit):");
             String filename = sc.nextLine().trim();
+
+            if (filename.equalsIgnoreCase("EXIT")) {
+                return false;
+            }
 
             if (filename.isEmpty()) {
                 System.out.println("Filename cannot be empty.");
@@ -93,11 +115,12 @@ public class SupermarketManagementSystem {
             if (database.getSkippedLines() > 0) {
                 System.out.println("Invalid lines skipped: " + database.getSkippedLines());
             }
-            return;
+            return true;
         }
     }
 
     // ---------- Menu ----------
+
     // Prints every menu option by iterating through the MenuOption enum.
     private static void displayMenu() {
         System.out.println();
@@ -115,6 +138,7 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Sort ----------
+
     // Displays the first employees of the list (up to the given limit).
     private static void displayFirstEmployees(EmployeeDatabase database, int limit) {
         ArrayList<Employee> employees = database.getEmployees();
@@ -133,6 +157,7 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Search ----------
+
     // Asks for a name, searches for it and shows the employee's details.
     private static void searchEmployee(Scanner sc, EmployeeDatabase database) {
         String name = readNonEmptyText(sc,
@@ -162,14 +187,10 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Add records ----------
+
     // Lets the user add one or more new managers, then shows all newly added records.
     private static void addEmployees(Scanner sc, EmployeeDatabase database) {
         ArrayList<String> departmentNames = database.getDepartmentNames();
-
-        if (departmentNames.isEmpty()) {
-            System.out.println("No departments available. Please load a data file first.");
-            return;
-        }
 
         do {
             String name = readNewEmployeeName(sc, database);
@@ -177,18 +198,15 @@ public class SupermarketManagementSystem {
             String firstName = name.substring(0, spaceIndex);
             String lastName = name.substring(spaceIndex + 1);
 
-            // Manager type: only the types listed in the ManagerType enum can be chosen
-            System.out.println("Please select from the following Management Staff:");
-            for (ManagerType type : ManagerType.values()) {
-                System.out.println(type.getOptionNumber() + ". " + type.getJobTitle());
-            }
-            int typeNumber = readNumberInRange(sc, 1, ManagerType.values().length);
-            ManagerType managerType = ManagerType.fromNumber(typeNumber);
+            // Manager type: only the types in the ManagerType enum, and only one Head Manager
+            ManagerType managerType = readManagerType(sc, database);
 
-            // Department: only departments that already exist in the data can be chosen
+            // Department: only departments that exist in the supermarket can be chosen.
+            // Each one is shown with its type, e.g. "Bakery (Customer-Facing Department)".
             System.out.println("Please select the Department:");
             for (int i = 0; i < departmentNames.size(); i++) {
-                System.out.println((i + 1) + ". " + departmentNames.get(i));
+                System.out.println((i + 1) + ". "
+                        + Department.createDepartment(departmentNames.get(i)));
             }
             int departmentNumber = readNumberInRange(sc, 1, departmentNames.size());
             String departmentName = departmentNames.get(departmentNumber - 1);
@@ -243,6 +261,28 @@ public class SupermarketManagementSystem {
         }
     }
 
+    // Shows the manager types and reads the user's choice. Only one Head Manager
+    // is allowed, so that choice is refused when the organisation already has one.
+    private static ManagerType readManagerType(Scanner sc, EmployeeDatabase database) {
+        // Each type is shown with the equivalent supermarket role, e.g. "Head Manager (Store Manager)"
+        System.out.println("Please select from the following Management Staff:");
+        for (ManagerType type : ManagerType.values()) {
+            System.out.println(type.getOptionNumber() + ". " + type.getJobTitle()
+                    + " (" + type.getStoreRole() + ")");
+        }
+
+        while (true) {
+            int typeNumber = readNumberInRange(sc, 1, ManagerType.values().length);
+            ManagerType managerType = ManagerType.fromNumber(typeNumber);
+
+            if (managerType == ManagerType.HEAD_MANAGER && database.hasHeadManager()) {
+                System.out.println("A Head Manager already exists. Please choose another type:");
+            } else {
+                return managerType;
+            }
+        }
+    }
+
     // Makes the first letter of each word upper case, e.g. "john joe" -> "John Joe".
     private static String capitaliseWords(String text) {
         String[] words = text.split(" ");
@@ -270,6 +310,7 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Random data ----------
+
     // Asks how many records to generate, creates them with random but appropriate
     // data, adds them to the list and shows them.
     private static void generateRandomEmployees(Scanner sc, EmployeeDatabase database) {
@@ -301,6 +342,7 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Binary tree ----------
+
     // Builds the employee hierarchy as a binary tree using level-order insertion,
     // then shows the level-order traversal, the height and the number of nodes.
     private static void buildEmployeeTree(EmployeeDatabase database) {
@@ -319,7 +361,7 @@ public class SupermarketManagementSystem {
 
         System.out.println("Binary tree created successfully.");
         System.out.println();
-        System.out.println("Employee hierarchy (level-order traversal):");
+        System.out.println("Supermarket staff hierarchy (level-order traversal):");
         tree.displayLevelOrder();
         System.out.println();
         System.out.println("Tree height: " + tree.height() + " levels");
@@ -327,6 +369,7 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Reusable input helpers ----------
+
     // Shows a prompt and reads text until it is not empty.
     // Extra spaces are removed: outer spaces with trim(), repeated inner spaces with replaceAll().
     private static String readNonEmptyText(Scanner sc, String prompt, String fieldName) {

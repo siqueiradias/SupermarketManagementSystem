@@ -31,15 +31,18 @@ public abstract class Manager extends Employee {
 
         String title = jobTitle == null ? "" : jobTitle.trim();
 
+        // The titles used in the data file are accepted, and so are the role names
+        // commonly used in supermarkets (e.g. "Store Manager", "Supervisor")
         return switch (title) {
-            case "Head Manager" -> new HeadManager(firstName, lastName,
-                    gender, email, salary, department, jobTitle, company);
-            case "Manager", "Senior Manager" -> new DepartmentManager(firstName, lastName,
-                    gender, email, salary, department, jobTitle, company);
-            case "Assistant Manager" -> new AssistantManager(firstName, lastName,
-                    gender, email, salary, department, jobTitle, company);
-            case "Team Lead" -> new TeamLead(firstName, lastName,
-                    gender, email, salary, department, jobTitle, company);
+            case "Head Manager", "Store Manager", "Store Owner" -> new HeadManager(firstName,
+                    lastName, gender, email, salary, department, jobTitle, company);
+            case "Assistant Manager", "Deputy Manager" -> new AssistantManager(firstName,
+                    lastName, gender, email, salary, department, jobTitle, company);
+            case "Manager", "Senior Manager", "Department Manager", "Department Head" ->
+                new DepartmentManager(firstName, lastName,
+                        gender, email, salary, department, jobTitle, company);
+            case "Team Lead", "Team Leader", "Supervisor", "Chargehand" -> new TeamLead(firstName,
+                    lastName, gender, email, salary, department, jobTitle, company);
             // Fallback for any management title not seen in the sample data
             default -> new DepartmentManager(firstName, lastName,
                     gender, email, salary, department, jobTitle, company);

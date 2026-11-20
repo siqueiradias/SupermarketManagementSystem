@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Reads the data file and stores all employees in memory. Tracks whether the
- * list is sorted and which records were added by the user.
+ * Reads the data file and stores all employees in memory.
+ * Tracks whether the list is sorted and which records were added by the user.
  *
  * @author diogodias
  */
@@ -133,10 +133,25 @@ public class EmployeeDatabase {
         return employees.get(index);
     }
 
-    // Returns the names of all departments that currently exist, in alphabetical order.
+    // Returns true if the organisation already has a Head Manager.
+    // Only one is allowed, because the Head Manager is the top of the hierarchy.
+    public boolean hasHeadManager() {
+        for (Employee employee : employees) {
+            if (employee instanceof HeadManager) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Returns the names of all departments that exist in the organisation, in alphabetical
+    // order: the supermarket's own departments, plus any other department found in the data.
     public ArrayList<String> getDepartmentNames() {
         ArrayList<String> names = new ArrayList<>();
 
+        for (String name : Department.getSupermarketDepartments()) {
+            insertSortedUnique(names, name);
+        }
         for (Employee employee : employees) {
             insertSortedUnique(names, employee.getDepartment().getDepartmentName());
         }

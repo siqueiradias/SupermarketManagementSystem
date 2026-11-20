@@ -5,9 +5,10 @@ import java.util.Random;
 
 /**
  * Generates random but appropriate employee records. "Appropriate" means the
- * data is consistent with a real organisation and with the data file:
- * unique names, existing departments and companies, job titles that match the
- * department, salaries that match the level, and more staff than managers.
+ * data is consistent with a real supermarket and with the data file:
+ * unique names, the supermarket's departments, companies (branches) taken from the
+ * data, job titles that match the department, salaries that match the level,
+ * one Head Manager only, and more staff than managers.
  *
  * @author diogodias
  */
@@ -33,10 +34,10 @@ public class RandomEmployeeGenerator {
 
     private static final String[] SENIORITY_LEVELS = {"junior", "middle", "senior"};
 
-    // Only one Head Manager makes sense in an organisation, so random managers
-    // are created only at the lower management levels.
-    private static final ManagerType[] RANDOM_MANAGER_TYPES = {
-        ManagerType.DEPARTMENT_MANAGER, ManagerType.ASSISTANT_MANAGER, ManagerType.TEAM_LEAD
+    // Management levels used once the organisation already has its Head Manager
+    // (only one Head Manager is allowed, because it is the top of the hierarchy).
+    private static final ManagerType[] LOWER_MANAGER_TYPES = {
+        ManagerType.ASSISTANT_MANAGER, ManagerType.DEPARTMENT_MANAGER, ManagerType.TEAM_LEAD
     };
 
     private final EmployeeDatabase database;
@@ -44,7 +45,8 @@ public class RandomEmployeeGenerator {
     private final ArrayList<String> companyNames;
     private final Random random;
 
-    // Creates a generator that uses the departments and companies already in the database.
+    // Creates a generator that uses the supermarket's departments and the companies
+    // (branches) found in the data.
     public RandomEmployeeGenerator(EmployeeDatabase database) {
         this.database = database;
         this.departmentNames = database.getDepartmentNames();
@@ -52,13 +54,8 @@ public class RandomEmployeeGenerator {
         this.random = new Random();
     }
 
-    // Creates one random employee. Returns null if no unused name could be found
-    // or if there are no departments to choose from.
+    // Creates one random employee. Returns null if no unused name could be found.
     public Employee createRandomEmployee() {
-        if (departmentNames.isEmpty()) {
-            return null;
-        }
-
         // Gender first, so the first name matches it
         String gender = random.nextBoolean() ? "Female" : "Male";
         String[] firstNames = gender.equals("Female") ? FEMALE_FIRST_NAMES : MALE_FIRST_NAMES;
@@ -87,7 +84,11 @@ public class RandomEmployeeGenerator {
         int roll = random.nextInt(100); // a number from 0 to 99
 
         if (roll < 10) {
-            ManagerType type = RANDOM_MANAGER_TYPES[random.nextInt(RANDOM_MANAGER_TYPES.length)];
+            // If the organisation has no Head Manager yet, the first random manager
+            // takes that role; after that, only lower management levels are used
+            ManagerType type = database.hasHeadManager()
+                    ? LOWER_MANAGER_TYPES[random.nextInt(LOWER_MANAGER_TYPES.length)]
+                    : ManagerType.HEAD_MANAGER;
             String jobTitle = type.getJobTitle();
             return Manager.createManager(firstName, lastName, gender, email,
                     randomSalary(jobTitle), department, jobTitle, company);
@@ -112,7 +113,7 @@ public class RandomEmployeeGenerator {
     // so a Finance employee never gets a title such as "Sales Clerk".
     private String[] jobTitlesFor(String departmentName) {
         return switch (departmentName) {
-            case "Sales" -> new String[]{"Sales Clerk", "Clerk"};
+            case "Sales" -> new String[]{"Sales Clerk", "Sales Assistant"};
             case "Customer Service" -> new String[]{"Client Relations Coordinator",
                 "Client Relations Specialist", "Support Clerk"};
             case "Marketing" -> new String[]{"Marketing Specialist"};
@@ -123,6 +124,17 @@ public class RandomEmployeeGenerator {
             case "IT Development" -> new String[]{"Backend Developer", "Frontend Developer",
                 "Full-stack Developer", "QA", "DevOps"};
             case "Technical Support" -> new String[]{"Support Clerk", "Clerk"};
+            case "Grocery" -> new String[]{"Grocery Assistant", "Stock Clerk"};
+            case "Frozen Foods" -> new String[]{"Frozen Foods Assistant", "Stock Clerk"};
+            case "Checkouts" -> new String[]{"Cashier", "Customer Assistant"};
+            case "Off-Licence" -> new String[]{"Off-Licence Assistant"};
+            case "Online Orders" -> new String[]{"Online Order Picker", "Delivery Driver"};
+            case "Cafe" -> new String[]{"Barista", "Cafe Assistant"};
+            case "Bakery" -> new String[]{"Baker", "Bakery Assistant"};
+            case "Deli" -> new String[]{"Deli Assistant", "Chef"};
+            case "Butchery" -> new String[]{"Butcher", "Meat Cutter"};
+            case "Fresh Produce" -> new String[]{"Produce Assistant"};
+            case "Warehouse" -> new String[]{"Receiving Clerk", "Warehouse Operative"};
             // Fallback for any department name not seen in the sample data
             default -> new String[]{"Store Assistant"};
         };
@@ -137,9 +149,10 @@ public class RandomEmployeeGenerator {
             case "junior" -> randomAmount(2000, 3500);
             case "middle" -> randomAmount(3500, 5500);
             case "senior" -> randomAmount(5500, 8000);
-            case "Team Lead" -> randomAmount(4000, 7000);
-            case "Assistant Manager" -> randomAmount(7000, 15000);
-            default -> randomAmount(15000, 80000); // Manager
+            case "Team Lead" -> randomAmount(6500, 9000);
+            case "Assistant Manager" -> randomAmount(40000, 60000);
+            case "Head Manager" -> randomAmount(60000, 100000);
+            default -> randomAmount(9000, 40000); // Manager (department manager)
         };
     }
 

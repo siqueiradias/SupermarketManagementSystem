@@ -1,7 +1,9 @@
 package supermarketmanagementsystem;
 
 /**
- * Department that deals directly with customers (Sales, Customer Service, Marketing).
+ * Department on the shop floor or in direct contact with customers: Sales,
+ * Customer Service, Marketing, Grocery, Frozen Foods, Checkouts, Off-Licence,
+ * Online Orders and Cafe.
  *
  * @author diogodias
  */

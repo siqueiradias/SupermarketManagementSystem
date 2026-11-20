@@ -1,7 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
- * Manager who leads a small team.
+ * Supervisor of a shift or team (also called Team Leader or Chargehand).
+ * The lowest management level.
  *
  * @author diogodias
  */

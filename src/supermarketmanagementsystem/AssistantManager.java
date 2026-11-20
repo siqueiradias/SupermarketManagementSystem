@@ -1,7 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
- * Manager who supports a higher-level manager.
+ * Deputy manager: the "number two" of the store. Reports to the Head Manager,
+ * stands in for them, and has the Department Managers and Team Leads below.
  *
  * @author diogodias
  */
@@ -19,9 +20,9 @@ public class AssistantManager extends Manager {
         return "Assistant Manager";
     }
 
-    // Assistant managers rank 3 in the hierarchy.
+    // Assistant managers rank 2, just below the Head Manager.
     @Override
     public int getHierarchyRank() {
-        return 3;
+        return 2;
     }
 }

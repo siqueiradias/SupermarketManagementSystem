@@ -1,8 +1,8 @@
 package supermarketmanagementsystem;
 
 /**
- * Parent class for everyone in the organisation. Holds the data read from the
- * file and creates the correct employee type.
+ * Parent class for everyone in the organisation.
+ * Holds the data read from the file and creates the correct employee type.
  *
  * @author diogodias
  */
@@ -10,6 +10,7 @@ public abstract class Employee {
 
     // Value stored in fields that are not known, e.g. the company of a record added by the user
     public static final String NOT_SPECIFIED = "N/A";
+
     private final String firstName;
     private final String lastName;
     private final String gender;
@@ -106,19 +107,15 @@ public abstract class Employee {
         String pos = position == null ? "" : position.trim().toLowerCase();
 
         return switch (pos) {
-            case "junior", "middle", "senior" ->
-                new StaffEmployee(firstName, lastName,
-                gender, email, salary, department, jobTitle, company, pos);
-            case "contract" ->
-                new ContractEmployee(firstName, lastName,
-                gender, email, salary, department, jobTitle, company);
-            case "intern" ->
-                new Intern(firstName, lastName,
-                gender, email, salary, department, jobTitle, company);
+            case "junior", "middle", "senior" -> new StaffEmployee(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company, pos);
+            case "contract" -> new ContractEmployee(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
+            case "intern" -> new Intern(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
             // Empty Position: the Manager class decides the type from the job title
-            default ->
-                Manager.createManager(firstName, lastName,
-                gender, email, salary, department, jobTitle, company);
+            default -> Manager.createManager(firstName, lastName,
+                    gender, email, salary, department, jobTitle, company);
         };
     }
 }
