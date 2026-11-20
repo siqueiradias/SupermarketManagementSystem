@@ -18,7 +18,7 @@ public class SupermarketManagementSystem {
     private static final int DISPLAY_LIMIT = 20;      // names shown after sorting
     private static final int MIN_TREE_RECORDS = 20;   // minimum records to build the tree
     private static final int MAX_NAME_LENGTH = 50;    // maximum length of a new employee name
-    private static final String NOT_SPECIFIED = "N/A"; // value for fields not asked to the user
+    private static final int MAX_RANDOM_RECORDS = 50; // maximum records generated at once
 
     // Program entry point: loads the data file, then shows the menu until the user exits.
     public static void main(String[] args) {
@@ -47,11 +47,16 @@ public class SupermarketManagementSystem {
                     System.out.println("ADD RECORDS selected");
                     addEmployees(sc, database);
                 }
+                case GENERATE_RANDOM_DATA -> {
+                    System.out.println("GENERATE RANDOM DATA selected");
+                    generateRandomEmployees(sc, database);
+                }
                 case CREATE_BINARY_TREE -> {
                     System.out.println("Create Binary Tree selected");
                     buildEmployeeTree(database);
                 }
-                case EXIT -> System.out.println("Exiting the program. Goodbye!");
+                case EXIT ->
+                    System.out.println("Exiting the program. Goodbye!");
             }
 
         } while (choice != MenuOption.EXIT);
@@ -60,7 +65,6 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- File loading ----------
-
     // Asks for the data file name until a file with valid employee records is read.
     private static void loadDataFile(Scanner sc, EmployeeDatabase database) {
         while (true) {
@@ -94,7 +98,6 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Menu ----------
-
     // Prints every menu option by iterating through the MenuOption enum.
     private static void displayMenu() {
         System.out.println();
@@ -112,7 +115,6 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Sort ----------
-
     // Displays the first employees of the list (up to the given limit).
     private static void displayFirstEmployees(EmployeeDatabase database, int limit) {
         ArrayList<Employee> employees = database.getEmployees();
@@ -131,7 +133,6 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Search ----------
-
     // Asks for a name, searches for it and shows the employee's details.
     private static void searchEmployee(Scanner sc, EmployeeDatabase database) {
         String name = readNonEmptyText(sc,
@@ -161,7 +162,6 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Add records ----------
-
     // Lets the user add one or more new managers, then shows all newly added records.
     private static void addEmployees(Scanner sc, EmployeeDatabase database) {
         ArrayList<String> departmentNames = database.getDepartmentNames();
@@ -195,9 +195,10 @@ public class SupermarketManagementSystem {
 
             Department department = Department.createDepartment(departmentName);
 
+            // Fields the brief does not ask for are stored as "N/A" (salary as 0.0)
             Employee newEmployee = Manager.createManager(firstName, lastName,
-                    NOT_SPECIFIED, NOT_SPECIFIED, 0.0, department,
-                    managerType.getJobTitle(), NOT_SPECIFIED);
+                    Employee.NOT_SPECIFIED, Employee.NOT_SPECIFIED, 0.0, department,
+                    managerType.getJobTitle(), Employee.NOT_SPECIFIED);
 
             database.addNewEmployee(newEmployee);
 
@@ -268,15 +269,45 @@ public class SupermarketManagementSystem {
         }
     }
 
-    // ---------- Binary tree ----------
+    // ---------- Random data ----------
+    // Asks how many records to generate, creates them with random but appropriate
+    // data, adds them to the list and shows them.
+    private static void generateRandomEmployees(Scanner sc, EmployeeDatabase database) {
+        System.out.println("How many random employees would you like to generate? (1-"
+                + MAX_RANDOM_RECORDS + "):");
+        int amount = readNumberInRange(sc, 1, MAX_RANDOM_RECORDS);
 
+        RandomEmployeeGenerator generator = new RandomEmployeeGenerator(database);
+        ArrayList<Employee> generated = new ArrayList<>();
+
+        for (int i = 0; i < amount; i++) {
+            Employee employee = generator.createRandomEmployee();
+
+            if (employee == null) {
+                System.out.println("No more unique names available. Stopped after "
+                        + generated.size() + " records.");
+                break;
+            }
+            database.addEmployee(employee);
+            generated.add(employee);
+        }
+
+        System.out.println("Randomly generated records (" + generated.size() + "):");
+        for (Employee employee : generated) {
+            System.out.println("  " + employee + " - " + employee.getCompany()
+                    + " - " + employee.getSalary());
+        }
+        System.out.println("Total employees: " + database.getCount());
+    }
+
+    // ---------- Binary tree ----------
     // Builds the employee hierarchy as a binary tree using level-order insertion,
     // then shows the level-order traversal, the height and the number of nodes.
     private static void buildEmployeeTree(EmployeeDatabase database) {
         if (database.getCount() < MIN_TREE_RECORDS) {
             System.out.println("At least " + MIN_TREE_RECORDS
                     + " employee records are needed to build the tree. Currently: "
-                    + database.getCount() + ". Please add more records.");
+                    + database.getCount() + ". Please add records or generate random data.");
             return;
         }
 
@@ -296,7 +327,6 @@ public class SupermarketManagementSystem {
     }
 
     // ---------- Reusable input helpers ----------
-
     // Shows a prompt and reads text until it is not empty.
     // Extra spaces are removed: outer spaces with trim(), repeated inner spaces with replaceAll().
     private static String readNonEmptyText(Scanner sc, String prompt, String fieldName) {

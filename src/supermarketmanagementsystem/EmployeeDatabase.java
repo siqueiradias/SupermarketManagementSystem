@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Reads the data file and stores all employees in memory.
- * Tracks whether the list is sorted and which records were added by the user.
+ * Reads the data file and stores all employees in memory. Tracks whether the
+ * list is sorted and which records were added by the user.
  *
  * @author diogodias
  */
@@ -133,24 +133,43 @@ public class EmployeeDatabase {
         return employees.get(index);
     }
 
-    // Returns the names of all departments that currently exist, without duplicates.
-    // Each new name is inserted in its alphabetical position (the insertion idea from class),
-    // so the list is always shown to the user in the same order.
+    // Returns the names of all departments that currently exist, in alphabetical order.
     public ArrayList<String> getDepartmentNames() {
         ArrayList<String> names = new ArrayList<>();
 
         for (Employee employee : employees) {
-            String name = employee.getDepartment().getDepartmentName();
+            insertSortedUnique(names, employee.getDepartment().getDepartmentName());
+        }
+        return names;
+    }
 
-            if (!names.contains(name)) {
-                int position = 0;
-                while (position < names.size() && names.get(position).compareTo(name) < 0) {
-                    position++;
-                }
-                names.add(position, name);
+    // Returns the names of all companies that currently exist, in alphabetical order.
+    // Unknown values (empty or "N/A") are left out.
+    public ArrayList<String> getCompanyNames() {
+        ArrayList<String> names = new ArrayList<>();
+
+        for (Employee employee : employees) {
+            String company = employee.getCompany();
+
+            if (!company.isEmpty() && !company.equals(Employee.NOT_SPECIFIED)) {
+                insertSortedUnique(names, company);
             }
         }
         return names;
+    }
+
+    // Adds a name to an alphabetical list, unless it is already there.
+    // The name is inserted in its alphabetical position (the insertion idea from class),
+    // so the list is always shown to the user in the same order.
+    private void insertSortedUnique(ArrayList<String> names, String name) {
+        if (names.contains(name)) {
+            return;
+        }
+        int position = 0;
+        while (position < names.size() && names.get(position).compareTo(name) < 0) {
+            position++;
+        }
+        names.add(position, name);
     }
 
     // Returns all employees (from the file and added by the user).

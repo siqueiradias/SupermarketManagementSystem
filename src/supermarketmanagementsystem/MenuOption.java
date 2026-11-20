@@ -11,8 +11,9 @@ public enum MenuOption {
     SORT(1, "SORT"),
     SEARCH(2, "SEARCH"),
     ADD_RECORDS(3, "ADD RECORDS"),
-    CREATE_BINARY_TREE(4, "Create Binary Tree"),
-    EXIT(5, "EXIT");
+    GENERATE_RANDOM_DATA(4, "GENERATE RANDOM DATA"),
+    CREATE_BINARY_TREE(5, "Create Binary Tree"),
+    EXIT(6, "EXIT");
 
     private final int optionNumber;
     private final String label;
